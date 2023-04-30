@@ -1,2 +1,5 @@
 .vscode
 *.exe
+/basic_tuts/*.ppm
+
+*.ppm
