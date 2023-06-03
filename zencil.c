@@ -50,6 +50,57 @@ defer:
     if(f) fclose(f);
     return result;
 }
+// 绘制矩形
+void zencil_fill_rect(uint32_t *pixels,size_t pixels_width,size_t pixels_height, 
+    int x0,int y0, size_t w, size_t h,uint32_t color )
+{
+    for (int dy = 0; dy < (int)h; dy++)
+    {
+        int y = y0 + dy;//row
+        if(0 <= y && y < (int)pixels_height){
+            for (int dx = 0; dx < (int)w; dx++)
+            {
+                int x = x0 + dx;
+                if(0 <= x && x < (int)pixels_width){
+                    pixels[y*pixels_width + x] = color;
+                }
+            }
+        }
+        
+    }
+    
+}
 
+void zencil_fill_circle(uint32_t *pixels, 
+    size_t pixels_width, size_t pixels_height, 
+    int cx, int cy,int r, uint32_t color)
+{
+    // cx cy circle 位于范围内
+    // (lefttop) x1,y1 rightbottom(x2,y2)
+    // x1 < x < x2, y1 < y < y2
+    int x1 = cx - (int) r;
+    int y1 = cy - (int) r;
+
+    int x2 = cx + (int) r;
+    int y2 = cy + (int) r;
+    for (int y = y1; y < y2; y++)
+    {
+        // 对 y 限制在图像区域内(row)
+        if(0 <= y && y < pixels_height){
+
+            for (int x = x1; x < x2; x++)
+            {
+                if(0<=x && x < pixels_width){
+                    int dx =  x - cx;
+                    int dy =  y - cy;
+                    if(sqrt(dx*dx + dy*dy) <= r){
+                        // printf("dx=%d",dx);
+                        pixels[y*pixels_width + x] = color;
+                    }
+                }
+            }
+        }
+    }
+}
 
 #endif //ZENCIL_H_
