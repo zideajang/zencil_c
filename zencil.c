@@ -58,6 +58,67 @@ defer:
     if(f) fclose(f);
     return result;
 }
+typedef enum 
+{
+    COMP_RED = 0,
+    COMP_GREEN,
+    COMP_BLUE,
+    COMP_ALPHA,
+    COUNT_COMPS,
+} Comp_Index;
+
+uint32_t pack_rgb32(uint8_t comp[COUNT_COMPS])
+{
+    // r g b a
+    // 0xAABBGGRR
+    uint32_t result = 0;
+    for (size_t i = 0; i < COUNT_COMPS; i++)
+    {
+        result |= comp[i]<<(8*i);
+    }
+
+    return result;
+    
+}
+
+void unpack_rgb32(uint32_t c, uint8_t comp[COUNT_COMPS])
+{
+    for (size_t i = 0; i < COUNT_COMPS; i++)
+    {
+        comp[i] = c&0xFF;
+        c >>=8;
+    }
+    
+}
+uint8_t zencil_mix_comps(uint8_t c1,uint8_t c2, uint8_t a)
+{
+    // 混合效果大于 255 
+    // a + (b - a) * (a/255)
+    return c1 + (c2 - c1)*a/255;
+}
+// 0xFF0000FF AABBGGRR 
+// 颜色混合方法
+uint32_t zencil_mix_colors(uint32_t c1, uint32_t c2)
+{
+
+    uint8_t comp1[COUNT_COMPS];
+    unpack_rgb32(c1,comp1);
+
+    uint8_t comp2[COUNT_COMPS];
+    unpack_rgb32(c2,comp2);
+
+    printf("comp2[COMP_ALPHA]:%d\n",comp2[COMP_ALPHA]);
+
+    for (size_t i = 0; i < COMP_ALPHA; i++)
+    {
+        
+        comp1[i] = zencil_mix_comps(comp1[i],comp2[i],comp2[COMP_ALPHA]);
+    }
+
+    return pack_rgb32(comp1);
+}
+
+
 // 绘制矩形
 void zencil_fill_rect(uint32_t *pixels,size_t pixels_width,size_t pixels_height, 
     int x0,int y0, size_t w, size_t h,uint32_t color )
@@ -70,7 +131,11 @@ void zencil_fill_rect(uint32_t *pixels,size_t pixels_width,size_t pixels_height,
             {
                 int x = x0 + dx;
                 if(0 <= x && x < (int)pixels_width){
-                    pixels[y*pixels_width + x] = color;
+                    // printf("%x ",color);
+                    // printf("%x ",pixels[y*pixels_width + x]);
+                    // printf("%x \n",zencil_mix_colors(pixels[y*pixels_width + x], color));
+
+                    pixels[y*pixels_width + x] = zencil_mix_colors(pixels[y*pixels_width + x], color);
                 }
             }
         }

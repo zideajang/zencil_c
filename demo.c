@@ -1,6 +1,9 @@
 #include<stdio.h>
+#include<stdint.h>
+
+
 int main(int argc, char const *argv[])
 {
-    printf("hello clang");
-    return 0;
+    uint32_t c = 0xFF0000FF;
+    printf("%d",c);
 }
