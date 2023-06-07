@@ -168,7 +168,8 @@ void zencil_fill_circle(uint32_t *pixels,
                     int dy =  y - cy;
                     if(sqrt(dx*dx + dy*dy) <= r){
                         // printf("dx=%d",dx);
-                        pixels[y*pixels_width + x] = color;
+                        pixels[y*pixels_width + x] = zencil_mix_colors(pixels[y*pixels_width + x], color);
+                        // pixels[y*pixels_width + x] = color;
                     }
                 }
             }
@@ -259,7 +260,7 @@ bool zencil_line_of_segment(int x1, int y1,int x2,int y2, int *k,int *c)
 }
 
 // 绘制三角形(三角形可以组成任意图形)
-void zencil_fill_triangle(uint32_t *pixels, size_t width, size_t height,
+void zencil_fill_triangle(uint32_t *pixels, size_t pixel_width, size_t pixel_height,
         int x1, int y1,
         int x2, int y2,
         int x3, int y3,
@@ -276,14 +277,15 @@ void zencil_fill_triangle(uint32_t *pixels, size_t width, size_t height,
     int dy13 = y3 - y1;
 
     for(int y = y1; y <=y2; y++){
-        if( 0 <= y && (size_t)y < height){
+        if( 0 <= y && (size_t)y < pixel_height){
             int s1 = dy12 != 0 ? (y - y1)*dx12/dy12 + x1:x1;
             int s2 = dy13 != 0 ? (y - y1)*dx13/dy13 + x1:x1;
             if(s1 > s2 ) ZENCIL_SWAP(int,s1,s2);
             for (int x = s1; x < s2; x++)
             {
-                if( 0 <= x && (size_t)x < width){
-                    pixels[y*width + x] = color;
+                if( 0 <= x && (size_t)x < pixel_width){
+                    // pixels[y*width + x] = color;
+                    pixels[y*pixel_width + x] = zencil_mix_colors(pixels[y*pixel_width + x], color);
                 }
             }
         }
@@ -295,14 +297,15 @@ void zencil_fill_triangle(uint32_t *pixels, size_t width, size_t height,
     int dy31 = y1 - y3;
 
     for(int y = y2; y <=y3; y++){
-        if( 0 <= y && (size_t)y < height){
+        if( 0 <= y && (size_t)y < pixel_height){
             int s1 = dy32 != 0 ? (y - y3)*dx32/dy32 + x3:x3;
             int s2 = dy31 != 0 ? (y - y3)*dx31/dy31 + x3:x3;
             if(s1 > s2 ) ZENCIL_SWAP(int,s1,s2);
             for (int x = s1; x < s2; x++)
             {
-                if( 0 <= x && (size_t)x < width){
-                    pixels[y*width + x] = color;
+                if( 0 <= x && (size_t)x < pixel_width){
+                    // pixels[y*width + x] = color;
+                    pixels[y*pixel_width + x] = zencil_mix_colors(pixels[y*pixel_width + x], color);
                 }
             }
         }

@@ -17,9 +17,7 @@
 static uint32_t pixels[WIDTH*HEIGHT];
 static uint32_t actual_pixels[WIDTH*HEIGHT];
 
-// 0xAAGGBBRR 分解为 4 个通道
-
-
+// 0xAABBGGRR 分解为 4 个通道
 int main(int argc, char const *argv[])
 {
     // 图像填充背景颜色
@@ -29,6 +27,18 @@ int main(int argc, char const *argv[])
         0,0,WIDTH*3/4,HEIGHT*3/4,0xFF0000FF);
     zencil_fill_rect(actual_pixels,WIDTH,HEIGHT,
         WIDTH/4,HEIGHT/4,WIDTH,HEIGHT,0x5500FF00);
+
+    zencil_fill_circle(actual_pixels,WIDTH,HEIGHT,WIDTH/2,HEIGHT/2,WIDTH/3,0x55FF2020);
+
+    int x1 = WIDTH/2,y1 = HEIGHT/8;
+    int x2 = WIDTH*4/8,y2 = HEIGHT/2;
+    int x3 = WIDTH/8*7,y3 = HEIGHT/8*7;
+
+    zencil_fill_triangle(actual_pixels, WIDTH,HEIGHT,
+            0,HEIGHT,
+            WIDTH,HEIGHT,
+            WIDTH/2,0,
+            0xBB20AAAA);
 
     const char *file_path = "alpha_example_5.ppm";
     
